@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+const fs = require('fs');
 const data = {
     list: []
 }
@@ -8,10 +9,17 @@ async function main(skill){
     //open new tab
     const page = await browser.newPage();
     //https://pl.indeed.com/jobs?q={skill}&l=Krak%C3%B3w%2C+ma%C5%82opolskie
-    await page.goto(`https://pl.indeed.com/jobs?q=${skill}&l=Krak%C3%B3w%2C+ma%C5%82opolskie`, {
+    await page.goto(`https://pl.indeed.com/jobs?q=${skill}&l=Krak%C3%B3w%2C`, {
         timeout: 0,
         waitUntil: 'networkidle0'
     });
+
+    /*const pdf = page.pdf({
+        path: '',
+        format: 'A4'
+    });
+
+    const screenshot = page.screenshot();*/
 
     const jobData = await page.evaluate(async (data) => {
         const items = document.querySelectorAll('td.resultContent');
@@ -28,13 +36,20 @@ async function main(skill){
             data.list.push({
                 title,
                 salary,
-                company,
+                companyName,
                 link
             })
-        })
-    });
-    return data;
+        });
+        return data;
+    }, data);
+
+    let response = await jobData;
+    let json = await JSON.stringify(jobData, null, 2);
+    fs.writeFile('job.json', json , 'utf-8', () => {
+        console.log('written in job.json');
+    })
     browser.close();
-}
+    return response;
+};
 
 module.exports = main;

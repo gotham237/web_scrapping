@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/gotham237/day8_web_scrapping#readme",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "puppeteer": "^19.6.3"
   }
 }
